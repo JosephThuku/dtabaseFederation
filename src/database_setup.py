@@ -4,22 +4,29 @@ from sqlalchemy import create_engine, text
 mysql_engine = create_engine("mysql+pymysql://joe:JoeThuku1948@localhost/school_db")
 postgres_engine = create_engine("postgresql+psycopg2://postgres:joe@localhost/teachers_db")
 
+
 def setup_mysql():
     with mysql_engine.connect() as conn:
-        conn.execute(text("DROP TABLE IF EXISTS students"))
-        conn.execute(text("""
-            CREATE TABLE students (
-                student_id INT PRIMARY KEY,
-                first_name VARCHAR(50),
-                last_name VARCHAR(50),
-                email VARCHAR(100)
-            )
-        """))
-        conn.execute(text("""
-            INSERT INTO students (student_id, first_name, last_name, email) VALUES
-            (1, 'John', 'Doe', 'john.doe@example.com'),
-            (2, 'Jane', 'Smith', 'jane.smith@example.com')
-        """))
+        try:
+            with conn.begin():  # Explicitly manage the transaction
+                conn.execute(text("DROP TABLE IF EXISTS students"))
+                conn.execute(text("""
+                    CREATE TABLE students (
+                        student_id INT PRIMARY KEY,
+                        first_name VARCHAR(50),
+                        last_name VARCHAR(50),
+                        email VARCHAR(100)
+                    )
+                """))
+                conn.execute(text("""
+                    INSERT INTO students (student_id, first_name, last_name, email) VALUES
+                    (1, 'John', 'Doe', 'john.doe@example.com'),
+                    (2, 'Jane', 'Smith', 'jane.smith@example.com')
+                """))
+            print("Data inserted successfully.")
+        except Exception as e:
+            print(f"An error occurred while setting up MySQL: {e}")
+
 
 def setup_postgres():
     with postgres_engine.connect() as conn:

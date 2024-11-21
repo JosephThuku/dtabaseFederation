@@ -10,15 +10,32 @@ def federated_query():
         students = pd.read_sql("SELECT * FROM students", mysql_conn)
         teachers = pd.read_sql("SELECT * FROM teachers", postgres_conn)
 
-        print("MySQL - Students:")
+        print(f"****************************************************************************************")
+        print("MySQL - Students:\n")
         print(students)
+        print(f"****************************************************************************************")
+
+        print(f"****************************************************************************************")
+
         print("\nPostgreSQL - Teachers:")
         print(teachers)
+        print(f"****************************************************************************************")
 
         # Example joining on arbitrary conditions; here we just show both tables side by side
         combined = pd.concat([students, teachers], axis=1)
         print("\nFederated Query Result:")
         print(combined)
+
+        #updated combined data  but replacing Nan with nodata
+        combined = combined.fillna("No Data")
+        print("\nFederated Query Result:")
+        print(combined)
+        
+
+
+        #eample of how now our system can interact with both databases
+
+        #sample query to get a student from the combined data but
 
 if __name__ == "__main__":
     federated_query()
